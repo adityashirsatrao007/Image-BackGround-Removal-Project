@@ -28,14 +28,14 @@ app.set("trust proxy", 1);
 app.use(express.json());
 
 // CORS configuration
-if (process.env.NODE_ENV !== "production") {
-  app.use(
-    cors({
-      origin: "http://localhost:5173",
-      credentials: true,
-    })
-  );
-}
+app.use(
+  cors({
+    origin: process.env.NODE_ENV === "production" 
+      ? ["https://image-background-removal-project.onrender.com", "https://*.onrender.com"]
+      : "http://localhost:5173",
+    credentials: true,
+  })
+);
 
 app.use(morgan("dev"));
 // app.use(reqLimit);
@@ -55,34 +55,55 @@ if (process.env.NODE_ENV === "production") {
     path.join(process.cwd(), "client/dist"),
   ];
 
-  let staticPath = possiblePaths[0]; // default
+  let staticPath = null;
 
   // Use the first path that exists
   for (const testPath of possiblePaths) {
     try {
       if (fs.existsSync(testPath)) {
         staticPath = testPath;
+        console.log(`Found static files at: ${staticPath}`);
         break;
       }
     } catch (e) {
-      // Continue to next path
+      console.log(`Path ${testPath} not accessible:`, e.message);
     }
   }
 
-  console.log(`Serving static files from: ${staticPath}`);
-  app.use(express.static(staticPath));
+  if (staticPath) {
+    console.log(`Serving static files from: ${staticPath}`);
+    app.use(express.static(staticPath));
 
-  app.get("*", (req, res) => {
-    const indexPath = path.join(staticPath, "index.html");
-    console.log(`Serving index.html from: ${indexPath}`);
-    res.sendFile(indexPath);
-  });
-}
-
-// Test route for non-production
-if (process.env.NODE_ENV !== "production") {
+    // Catch-all handler for React Router
+    app.get("*", (req, res) => {
+      // Don't serve index.html for API routes
+      if (req.path.startsWith('/api/')) {
+        return next();
+      }
+      
+      const indexPath = path.join(staticPath, "index.html");
+      if (fs.existsSync(indexPath)) {
+        console.log(`Serving index.html from: ${indexPath}`);
+        res.sendFile(indexPath);
+      } else {
+        console.error(`index.html not found at: ${indexPath}`);
+        res.status(404).json({ error: "Frontend not found" });
+      }
+    });
+  } else {
+    console.error("No static files found! Frontend will not be served.");
+    // Serve a simple message if frontend build is missing
+    app.get("/", (req, res) => {
+      res.status(200).json({ 
+        message: "Background Removal API Server Running",
+        error: "Frontend build not found - please check build process"
+      });
+    });
+  }
+} else {
+  // Development mode
   app.get("/", (req, res) => {
-    res.status(200).json({ message: "Background Removal API Server Running" });
+    res.status(200).json({ message: "Background Removal API Server Running (Development)" });
   });
 }
 
