@@ -52,11 +52,11 @@ if (process.env.NODE_ENV === "production") {
   const possiblePaths = [
     path.join(__dirname, "../../client/dist"),
     path.join(__dirname, "../client/dist"),
-    path.join(process.cwd(), "client/dist")
+    path.join(process.cwd(), "client/dist"),
   ];
-  
+
   let staticPath = possiblePaths[0]; // default
-  
+
   // Use the first path that exists
   for (const testPath of possiblePaths) {
     try {
@@ -68,7 +68,7 @@ if (process.env.NODE_ENV === "production") {
       // Continue to next path
     }
   }
-  
+
   console.log(`Serving static files from: ${staticPath}`);
   app.use(express.static(staticPath));
 
