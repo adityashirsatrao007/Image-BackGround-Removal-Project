@@ -12,22 +12,30 @@ const removeBgImage = async (req, res, next) => {
     console.log("Headers:", req.headers);
     console.log("Body:", req.body);
     console.log("File:", req.file);
-    
+
     const { clerkId } = req.body;
-    const user = await userModel.findOne({ clerkId });
+    let user = await userModel.findOne({ clerkId });
 
     if (!user) {
-      console.error("User not found with clerkId:", clerkId);
-      throw new Error("User not found with this clerkId");
+      console.log("User not found, creating new user with clerkId:", clerkId);
+      // Auto-create user if they don't exist (fallback for webhook issues)
+      user = await userModel.create({
+        clerkId: clerkId,
+        email: `user_${clerkId}@temp.com`, // Temporary email
+        firstName: "User",
+        lastName: "",
+        photo: "",
+      });
+      console.log("User created successfully:", user.email);
     }
 
-    console.log("User found:", user.email);
+    console.log("User found/created:", user.email);
 
     // No credit check needed - app is completely free!
 
     const imagePath = req.file.path;
     console.log("Image path:", imagePath);
-    
+
     const imageFile = fs.createReadStream(imagePath);
 
     const formData = new FormData();
@@ -69,17 +77,17 @@ const removeBgImage = async (req, res, next) => {
     console.error("=== Background Removal Error ===");
     console.error("Error message:", error.message);
     console.error("Error stack:", error.stack);
-    
+
     if (error.response) {
       console.error("ClipDrop API Error Status:", error.response.status);
       console.error("ClipDrop API Error Data:", error.response.data);
       console.error("ClipDrop API Error Headers:", error.response.headers);
     }
-    
+
     if (error.code) {
       console.error("Error code:", error.code);
     }
-    
+
     next(error);
   }
 };
