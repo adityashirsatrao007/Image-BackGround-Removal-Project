@@ -1,36 +1,24 @@
 {
   "name": "image-background-removal",
   "version": "1.0.0",
-  "description": "AI-powered background removal app with Clerk authentication",
-  "main": "server/src/server.js",
+  "description": "AI-powered background removal app",
+  "main": "backend/src/server.js",
+  "type": "module",
   "scripts": {
-    "build": "node build.js",
-    "start": "node start.js",
-    "debug-build": "node debug-build.js",
-    "dev": "concurrently \"cd server && npm run dev\" \"cd client && npm run dev\"",
-    "install-client": "cd client && npm install",
-    "install-server": "cd server && npm install",
-    "install-all": "npm run install-server && npm run install-client"
+    "build": "cd frontend && npm install && npm run build",
+    "start": "cd backend && npm start",
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm run dev\""
   },
   "keywords": [
     "ai",
     "background-removal",
     "image-processing",
     "react",
-    "nodejs",
-    "clerk",
-    "express"
+    "nodejs"
   ],
   "author": "Aditya Shirsatrao",
   "license": "MIT",
-  "dependencies": {
-    "svix": "^1.69.0"
-  },
   "devDependencies": {
     "concurrently": "^8.2.2"
-  },
-  "engines": {
-    "node": ">=18.0.0 <23.0.0",
-    "npm": ">=8.0.0"
   }
 }
