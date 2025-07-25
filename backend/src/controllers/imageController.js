@@ -22,7 +22,12 @@ const removeBgImage = async (req, res, next) => {
         : "No file"
     );
 
-    const { clerkId } = req.body;
+    const clerkId = req.clerkId || req.body.clerkId;
+    console.log("ClerkId:", clerkId);
+
+    if (!clerkId) {
+      throw new Error("User authentication required");
+    }
 
     // Auto-create user if they don't exist
     let user = await userModel.findOne({ clerkId });
