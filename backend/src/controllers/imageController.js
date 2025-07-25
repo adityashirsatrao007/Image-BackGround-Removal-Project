@@ -40,25 +40,27 @@ const removeBgImage = async (req, res, next) => {
 
     const formData = new FormData();
     formData.append("image_file", imageFile);
+    formData.append("size", "auto");
 
-    console.log("Calling ClipDrop API...");
+    console.log("Calling Remove.bg API...");
     const { data } = await axios.post(
-      "https://clipdrop-api.co/remove-background/v1",
+      "https://api.remove.bg/v1.0/removebg",
       formData,
       {
         headers: {
-          "x-api-key": clipdrop_api_key,
+          "X-Api-Key": clipdrop_api_key, // We'll reuse the same env var for now
+          "Content-Type": "multipart/form-data",
         },
         responseType: "arraybuffer",
       }
     );
 
     if (!data) {
-      console.error("ClipDrop API returned no data");
-      throw new Error("ClipDrop API did not return image data.");
+      console.error("Remove.bg API returned no data");
+      throw new Error("Remove.bg API did not return image data.");
     }
 
-    console.log("ClipDrop API success, data length:", data.length);
+    console.log("Remove.bg API success, data length:", data.length);
 
     const base64Image = Buffer.from(data, "binary").toString("base64");
     const resultImage = `data:${req.file.mimetype};base64,${base64Image}`;
@@ -79,9 +81,9 @@ const removeBgImage = async (req, res, next) => {
     console.error("Error stack:", error.stack);
 
     if (error.response) {
-      console.error("ClipDrop API Error Status:", error.response.status);
-      console.error("ClipDrop API Error Data:", error.response.data);
-      console.error("ClipDrop API Error Headers:", error.response.headers);
+      console.error("Remove.bg API Error Status:", error.response.status);
+      console.error("Remove.bg API Error Data:", error.response.data);
+      console.error("Remove.bg API Error Headers:", error.response.headers);
     }
 
     if (error.code) {
