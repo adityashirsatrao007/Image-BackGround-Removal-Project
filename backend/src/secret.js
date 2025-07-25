@@ -1,6 +1,10 @@
 import dotenv from "dotenv";
+import path from "path";
 
-dotenv.config();
+// Load .env from backend directory
+dotenv.config({ path: path.join(process.cwd(), 'backend', '.env') });
+// Also try root directory as fallback
+dotenv.config({ path: path.join(process.cwd(), '.env') });
 
 const PORT = process.env.PORT || 5001;
 const MONGODB_URI =
@@ -15,6 +19,7 @@ console.log("Environment loaded:", {
   MONGODB_URI: MONGODB_URI ? "Present" : "Missing",
   clerk_webhook_secret: clerk_webhook_secret ? "Present" : "Missing",
   clipdrop_api_key: clipdrop_api_key ? "Present" : "Missing",
+  remove_bg_api_key: remove_bg_api_key ? "Present" : "Missing",
   JWT_SECRET: JWT_SECRET ? "Present" : "Missing",
 });
 
