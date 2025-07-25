@@ -9,12 +9,14 @@ services:
       - key: NODE_ENV
         value: production
       - key: MONGODB_URI
-        fromDatabase:
-          name: mongodb-atlas
-          property: connectionString
+        sync: false
       - key: CLERK_WEBHOOK_SECRET
         sync: false
       - key: CLIPDROP_API_KEY
         sync: false
       - key: JWT_SECRET
         sync: false
+      - key: VITE_CLERK_PUBLISHABLE_KEY
+        sync: false
+      - key: VITE_BACKEND_URL
+        value: https://image-background-removal-project.onrender.com
