@@ -17,14 +17,14 @@ function executeCommand(command, options = {}) {
       timeout: 300000, // 5 minutes timeout
       maxBuffer: 1024 * 1024 * 10, // 10MB buffer
       env: { ...process.env, ...options.env },
-      ...options
+      ...options,
     });
     console.log(`✅ Command completed: ${command}`);
     return result;
   } catch (error) {
     console.error(`❌ Command failed: ${command}`);
-    console.error(`Exit code: ${error.status || 'unknown'}`);
-    console.error(`Signal: ${error.signal || 'none'}`);
+    console.error(`Exit code: ${error.status || "unknown"}`);
+    console.error(`Signal: ${error.signal || "none"}`);
     console.error(`Error message: ${error.message}`);
     throw error;
   }
@@ -34,15 +34,15 @@ function executeCommand(command, options = {}) {
 console.log("\n🔍 Validating environment...");
 const requiredEnvVars = [
   "MONGODB_URI",
-  "JWT_SECRET", 
+  "JWT_SECRET",
   "CLERK_WEBHOOK_SECRET",
-  "CLIPDROP_API_KEY"
+  "CLIPDROP_API_KEY",
 ];
 
-const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
+const missingVars = requiredEnvVars.filter((varName) => !process.env[varName]);
 if (missingVars.length > 0) {
   console.error("❌ Missing required environment variables:");
-  missingVars.forEach(varName => console.error(`   - ${varName}`));
+  missingVars.forEach((varName) => console.error(`   - ${varName}`));
   console.error("\n💡 Make sure these are set in your Render dashboard:");
   console.error("   Dashboard → Environment → Add Environment Variable");
   process.exit(1);
@@ -50,7 +50,7 @@ if (missingVars.length > 0) {
 
 console.log("✅ All required environment variables are present");
 console.log("🌍 Environment variables summary:");
-requiredEnvVars.forEach(varName => {
+requiredEnvVars.forEach((varName) => {
   const value = process.env[varName];
   const display = value?.length > 20 ? `${value.substring(0, 20)}...` : value;
   console.log(`   ${varName}: ${display}`);
@@ -58,9 +58,9 @@ requiredEnvVars.forEach(varName => {
 
 // Additional environment info
 console.log(`\n📊 Additional environment info:`);
-console.log(`   NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
-console.log(`   PORT: ${process.env.PORT || 'not set (will use default)'}`);
-console.log(`   RENDER: ${process.env.RENDER || 'not set'}`);
+console.log(`   NODE_ENV: ${process.env.NODE_ENV || "not set"}`);
+console.log(`   PORT: ${process.env.PORT || "not set (will use default)"}`);
+console.log(`   RENDER: ${process.env.RENDER || "not set"}`);
 
 const serverPath = path.join(process.cwd(), "server");
 
@@ -113,17 +113,19 @@ try {
 
   // Start the server
   console.log("\n🌟 Starting production server...");
-  console.log("📡 Server will be available on:", `http://localhost:${process.env.PORT || 10000}`);
+  console.log(
+    "📡 Server will be available on:",
+    `http://localhost:${process.env.PORT || 10000}`
+  );
   console.log("🚀 Starting server process...");
-  
-  executeCommand("npm start", { 
+
+  executeCommand("npm start", {
     cwd: serverPath,
     env: {
-      NODE_ENV: 'production',
-      ...process.env
-    }
+      NODE_ENV: "production",
+      ...process.env,
+    },
   });
-
 } catch (error) {
   console.error("\n💥 Server startup failed!");
   console.error("❌ Error:", error.message);
@@ -132,9 +134,9 @@ try {
     status: error.status,
     signal: error.signal,
     killed: error.killed,
-    command: error.cmd
+    command: error.cmd,
   });
-  
+
   // Additional debugging info
   console.error("\n🐛 Debug information:");
   console.error("📁 Current directory:", process.cwd());
@@ -144,6 +146,6 @@ try {
   console.error("🌍 Environment:");
   console.error("  NODE_ENV:", process.env.NODE_ENV);
   console.error("  PORT:", process.env.PORT);
-  
+
   process.exit(1);
 }

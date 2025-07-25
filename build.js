@@ -6,7 +6,7 @@ console.log("🚀 Starting enhanced build process...");
 console.log("Node version:", process.version);
 console.log("Platform:", process.platform);
 console.log("CWD:", process.cwd());
-console.log("Environment:", process.env.NODE_ENV || 'development');
+console.log("Environment:", process.env.NODE_ENV || "development");
 console.log("Timestamp:", new Date().toISOString());
 
 // Enhanced command execution with better error handling
@@ -18,14 +18,14 @@ function executeCommand(command, options = {}) {
       timeout: 600000, // 10 minutes timeout
       maxBuffer: 1024 * 1024 * 10, // 10MB buffer
       env: { ...process.env, ...options.env },
-      ...options
+      ...options,
     });
     console.log(`✅ Command completed: ${command}`);
     return result;
   } catch (error) {
     console.error(`❌ Command failed: ${command}`);
-    console.error(`Exit code: ${error.status || 'unknown'}`);
-    console.error(`Signal: ${error.signal || 'none'}`);
+    console.error(`Exit code: ${error.status || "unknown"}`);
+    console.error(`Signal: ${error.signal || "none"}`);
     console.error(`Error message: ${error.message}`);
     throw error;
   }
@@ -39,7 +39,7 @@ console.log("\n📁 Validating project structure...");
 [
   { name: "client", path: clientPath },
   { name: "server", path: serverPath },
-  { name: "package.json", path: path.join(process.cwd(), "package.json") }
+  { name: "package.json", path: path.join(process.cwd(), "package.json") },
 ].forEach(({ name, path: itemPath }) => {
   if (fs.existsSync(itemPath)) {
     console.log(`✅ ${name} found`);
@@ -71,7 +71,7 @@ try {
   // Build client
   console.log("\n🔨 Building client application...");
   console.log("Client path:", clientPath);
-  
+
   // Check if client package.json exists
   const clientPackageJson = path.join(clientPath, "package.json");
   if (!fs.existsSync(clientPackageJson)) {
@@ -81,9 +81,11 @@ try {
 
   // Read and validate client package.json
   try {
-    const clientPkg = JSON.parse(fs.readFileSync(clientPackageJson, 'utf8'));
+    const clientPkg = JSON.parse(fs.readFileSync(clientPackageJson, "utf8"));
     console.log(`📄 Client package: ${clientPkg.name} v${clientPkg.version}`);
-    console.log(`📄 Vite version: ${clientPkg.devDependencies?.vite || 'not specified'}`);
+    console.log(
+      `📄 Vite version: ${clientPkg.devDependencies?.vite || "not specified"}`
+    );
   } catch (error) {
     console.error("❌ Invalid client package.json:", error.message);
     process.exit(1);
@@ -92,7 +94,7 @@ try {
   // Clean client dependencies if they exist
   const clientNodeModules = path.join(clientPath, "node_modules");
   const clientPackageLock = path.join(clientPath, "package-lock.json");
-  
+
   if (fs.existsSync(clientNodeModules)) {
     console.log("🧹 Removing existing client node_modules...");
     fs.rmSync(clientNodeModules, { recursive: true, force: true });
@@ -104,7 +106,9 @@ try {
   }
 
   console.log("📦 Installing client dependencies...");
-  executeCommand("npm install --legacy-peer-deps --no-package-lock", { cwd: clientPath });
+  executeCommand("npm install --legacy-peer-deps --no-package-lock", {
+    cwd: clientPath,
+  });
 
   // Verify Vite installation
   console.log("🔍 Verifying Vite installation...");
@@ -112,7 +116,9 @@ try {
     executeCommand("npx vite --version", { cwd: clientPath });
   } catch (error) {
     console.error("❌ Vite verification failed, attempting to reinstall...");
-    executeCommand("npm install vite@5.4.9 --save-dev --legacy-peer-deps", { cwd: clientPath });
+    executeCommand("npm install vite@5.4.9 --save-dev --legacy-peer-deps", {
+      cwd: clientPath,
+    });
   }
 
   // Remove existing dist directory
@@ -123,12 +129,12 @@ try {
   }
 
   console.log("🏗️  Building client application...");
-  executeCommand("npm run build", { 
+  executeCommand("npm run build", {
     cwd: clientPath,
     env: {
-      NODE_ENV: 'production',
-      NODE_OPTIONS: '--max-old-space-size=4096'
-    }
+      NODE_ENV: "production",
+      NODE_OPTIONS: "--max-old-space-size=4096",
+    },
   });
 
   // Verify build output
@@ -155,7 +161,6 @@ try {
   console.log("\n🎉 Build completed successfully!");
   console.log("📁 Build artifacts created in:", distPath);
   console.log("⏰ Build finished at:", new Date().toISOString());
-
 } catch (error) {
   console.error("\n💥 Build failed!");
   console.error("❌ Error:", error.message);
@@ -164,9 +169,9 @@ try {
     status: error.status,
     signal: error.signal,
     killed: error.killed,
-    command: error.cmd
+    command: error.cmd,
   });
-  
+
   // Additional debugging info
   console.error("\n🐛 Debug information:");
   console.error("📁 Current directory:", process.cwd());
@@ -174,7 +179,7 @@ try {
   console.error("💻 Platform:", process.platform);
   console.error("🌍 Environment variables:");
   console.error("  NODE_ENV:", process.env.NODE_ENV);
-  console.error("  PATH length:", process.env.PATH?.length || 'undefined');
-  
+  console.error("  PATH length:", process.env.PATH?.length || "undefined");
+
   process.exit(1);
 }
