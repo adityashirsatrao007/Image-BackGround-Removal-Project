@@ -6,6 +6,7 @@ import cors from "cors";
 import morgan from "morgan";
 import createHttpError from "http-errors";
 import path from "path";
+import fs from "fs";
 import { errorResponse } from "./controllers/responseController.js";
 import userRouter from "./routes/userRoute.js";
 import imageRouter from "./routes/imageRoute.js";
@@ -47,11 +48,34 @@ app.use("/api/image", imageRouter);
 
 // Serve static files in production
 if (process.env.NODE_ENV === "production") {
-  // On Render, the client dist folder is at the root level after build
-  app.use(express.static(path.join(__dirname, "../../client/dist")));
+  // Try different possible paths for the client dist folder
+  const possiblePaths = [
+    path.join(__dirname, "../../client/dist"),
+    path.join(__dirname, "../client/dist"),
+    path.join(process.cwd(), "client/dist")
+  ];
+  
+  let staticPath = possiblePaths[0]; // default
+  
+  // Use the first path that exists
+  for (const testPath of possiblePaths) {
+    try {
+      if (fs.existsSync(testPath)) {
+        staticPath = testPath;
+        break;
+      }
+    } catch (e) {
+      // Continue to next path
+    }
+  }
+  
+  console.log(`Serving static files from: ${staticPath}`);
+  app.use(express.static(staticPath));
 
   app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../../client", "dist", "index.html"));
+    const indexPath = path.join(staticPath, "index.html");
+    console.log(`Serving index.html from: ${indexPath}`);
+    res.sendFile(indexPath);
   });
 }
 
