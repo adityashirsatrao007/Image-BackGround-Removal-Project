@@ -8,6 +8,7 @@ const MONGODB_URI =
 const JWT_SECRET = process.env.JWT_SECRET;
 const clerk_webhook_secret = process.env.CLERK_WEBHOOK_SECRET;
 const clipdrop_api_key = process.env.CLIPDROP_API_KEY;
+const remove_bg_api_key = process.env.REMOVE_BG_API_KEY;
 
 console.log("Environment loaded:", {
   PORT,
@@ -22,5 +23,6 @@ export {
   MONGODB_URI as mongoAtlasURL,
   clerk_webhook_secret,
   clipdrop_api_key,
+  remove_bg_api_key,
   JWT_SECRET,
 };

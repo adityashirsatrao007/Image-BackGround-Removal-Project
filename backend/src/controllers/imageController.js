@@ -3,7 +3,7 @@ import axios from "axios";
 import fs from "fs";
 import FormData from "form-data";
 import userModel from "../models/userModel.js";
-import { clipdrop_api_key } from "../secret.js";
+import { clipdrop_api_key, remove_bg_api_key } from "../secret.js";
 import { successResponse } from "./responseController.js";
 
 const removeBgImage = async (req, res, next) => {
@@ -48,7 +48,7 @@ const removeBgImage = async (req, res, next) => {
       formData,
       {
         headers: {
-          "X-Api-Key": clipdrop_api_key, // We'll reuse the same env var for now
+          "X-Api-Key": remove_bg_api_key,
           "Content-Type": "multipart/form-data",
         },
         responseType: "arraybuffer",
