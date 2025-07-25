@@ -6,6 +6,7 @@
   "scripts": {
     "build": "node build.js",
     "start": "node start.js",
+    "debug-build": "node debug-build.js",
     "dev": "concurrently \"cd server && npm run dev\" \"cd client && npm run dev\"",
     "install-client": "cd client && npm install",
     "install-server": "cd server && npm install",

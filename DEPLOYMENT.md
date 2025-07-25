@@ -55,7 +55,7 @@ Before deploying, make sure you have:
    Environment: Node
    Region: Choose your preferred region
    Branch: main
-   Build Command: npm run build
+   Build Command: npm install && npm run build
    Start Command: npm run start
    ```
 
