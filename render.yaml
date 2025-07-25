@@ -3,8 +3,8 @@ services:
     name: bg-removal-app
     runtime: node
     plan: free
-    buildCommand: npm install && npm run build
-    startCommand: npm run start
+    buildCommand: npm install && cd client && npm install && npm run build && cd ..
+    startCommand: cd server && npm install && npm start
     envVars:
       - key: NODE_ENV
         value: production

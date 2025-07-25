@@ -4,13 +4,12 @@
   "description": "AI-powered background removal app with Clerk authentication",
   "main": "server/src/server.js",
   "scripts": {
-    "build": "npm install && cd client && npm ci && npm run build",
-    "start": "cd server && npm ci && npm start",
+    "build": "npm install && cd client && npm install && npm run build",
+    "start": "cd server && npm install && npm start",
     "dev": "concurrently \"cd server && npm run dev\" \"cd client && npm run dev\"",
     "install-client": "cd client && npm install",
     "install-server": "cd server && npm install",
-    "install-all": "npm run install-server && npm run install-client",
-    "postinstall": "npm run install-all"
+    "install-all": "npm run install-server && npm run install-client"
   },
   "keywords": [
     "ai",
@@ -30,7 +29,7 @@
     "concurrently": "^8.2.2"
   },
   "engines": {
-    "node": ">=18.0.0",
+    "node": ">=18.0.0 <23.0.0",
     "npm": ">=8.0.0"
   }
 }

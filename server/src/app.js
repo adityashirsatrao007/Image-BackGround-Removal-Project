@@ -30,9 +30,13 @@ app.use(express.json());
 // CORS configuration
 app.use(
   cors({
-    origin: process.env.NODE_ENV === "production" 
-      ? ["https://image-background-removal-project.onrender.com", "https://*.onrender.com"]
-      : "http://localhost:5173",
+    origin:
+      process.env.NODE_ENV === "production"
+        ? [
+            "https://image-background-removal-project.onrender.com",
+            "https://*.onrender.com",
+          ]
+        : "http://localhost:5173",
     credentials: true,
   })
 );
@@ -75,12 +79,12 @@ if (process.env.NODE_ENV === "production") {
     app.use(express.static(staticPath));
 
     // Catch-all handler for React Router
-    app.get("*", (req, res) => {
+    app.get("*", (req, res, next) => {
       // Don't serve index.html for API routes
-      if (req.path.startsWith('/api/')) {
+      if (req.path.startsWith("/api/")) {
         return next();
       }
-      
+
       const indexPath = path.join(staticPath, "index.html");
       if (fs.existsSync(indexPath)) {
         console.log(`Serving index.html from: ${indexPath}`);
@@ -94,16 +98,18 @@ if (process.env.NODE_ENV === "production") {
     console.error("No static files found! Frontend will not be served.");
     // Serve a simple message if frontend build is missing
     app.get("/", (req, res) => {
-      res.status(200).json({ 
+      res.status(200).json({
         message: "Background Removal API Server Running",
-        error: "Frontend build not found - please check build process"
+        error: "Frontend build not found - please check build process",
       });
     });
   }
 } else {
   // Development mode
   app.get("/", (req, res) => {
-    res.status(200).json({ message: "Background Removal API Server Running (Development)" });
+    res
+      .status(200)
+      .json({ message: "Background Removal API Server Running (Development)" });
   });
 }
 
