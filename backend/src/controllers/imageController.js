@@ -10,15 +10,20 @@ const removeBgImage = async (req, res, next) => {
   try {
     console.log("=== Background Removal Request ===");
     console.log("API Key check:", remove_bg_api_key ? "Present" : "Missing");
-    console.log("File info:", req.file ? {
-      originalname: req.file.originalname,
-      mimetype: req.file.mimetype,
-      size: req.file.size,
-      path: req.file.path
-    } : "No file");
+    console.log(
+      "File info:",
+      req.file
+        ? {
+            originalname: req.file.originalname,
+            mimetype: req.file.mimetype,
+            size: req.file.size,
+            path: req.file.path,
+          }
+        : "No file"
+    );
 
     const { clerkId } = req.body;
-    
+
     // Auto-create user if they don't exist
     let user = await userModel.findOne({ clerkId });
     if (!user) {
@@ -51,15 +56,15 @@ const removeBgImage = async (req, res, next) => {
 
       console.log("Calling Remove.bg API with FormData...");
       const response = await axios({
-        method: 'post',
-        url: 'https://api.remove.bg/v1.0/removebg',
+        method: "post",
+        url: "https://api.remove.bg/v1.0/removebg",
         data: formData,
         headers: {
-          'X-Api-Key': remove_bg_api_key,
-          ...formData.getHeaders()
+          "X-Api-Key": remove_bg_api_key,
+          ...formData.getHeaders(),
         },
-        responseType: 'arraybuffer',
-        timeout: 30000 // 30 second timeout
+        responseType: "arraybuffer",
+        timeout: 30000, // 30 second timeout
       });
 
       if (response.data && response.data.length > 0) {
@@ -87,36 +92,41 @@ const removeBgImage = async (req, res, next) => {
       console.error("Remove.bg API Error:", {
         status: apiError.response?.status,
         statusText: apiError.response?.statusText,
-        data: apiError.response?.data ? apiError.response.data.toString() : "No data",
-        message: apiError.message
+        data: apiError.response?.data
+          ? apiError.response.data.toString()
+          : "No data",
+        message: apiError.message,
       });
 
       // Method 2: Try with base64 if file stream failed
       if (apiError.response?.status === 400) {
         console.log("Trying alternative method with base64...");
-        
+
         try {
           const imageBuffer = fs.readFileSync(imagePath);
-          const base64Image = imageBuffer.toString('base64');
-          
+          const base64Image = imageBuffer.toString("base64");
+
           const formData2 = new FormData();
           formData2.append("image_file_b64", base64Image);
           formData2.append("size", "auto");
 
           const response2 = await axios({
-            method: 'post',
-            url: 'https://api.remove.bg/v1.0/removebg',
+            method: "post",
+            url: "https://api.remove.bg/v1.0/removebg",
             data: formData2,
             headers: {
-              'X-Api-Key': remove_bg_api_key,
-              ...formData2.getHeaders()
+              "X-Api-Key": remove_bg_api_key,
+              ...formData2.getHeaders(),
             },
-            responseType: 'arraybuffer',
-            timeout: 30000
+            responseType: "arraybuffer",
+            timeout: 30000,
           });
 
           if (response2.data && response2.data.length > 0) {
-            console.log("Remove.bg success with base64! Response size:", response2.data.length);
+            console.log(
+              "Remove.bg success with base64! Response size:",
+              response2.data.length
+            );
             const resultBase64 = Buffer.from(response2.data).toString("base64");
             const resultImage = `data:image/png;base64,${resultBase64}`;
 
@@ -163,12 +173,11 @@ const removeBgImage = async (req, res, next) => {
         },
       });
     }
-
   } catch (error) {
     console.error("=== Background Removal Error ===");
     console.error("Error message:", error.message);
     console.error("Error stack:", error.stack);
-    
+
     // Clean up file if it exists
     if (req.file && req.file.path) {
       try {
@@ -177,7 +186,7 @@ const removeBgImage = async (req, res, next) => {
         console.log("Could not delete temp file on error:", err.message);
       }
     }
-    
+
     next(error);
   }
 };
