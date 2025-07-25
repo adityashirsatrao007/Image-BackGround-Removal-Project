@@ -4,8 +4,8 @@ node_modules/
 .pnp.js
 
 # Production builds
-client/dist/
-server/dist/
+frontend/dist/
+backend/dist/
 build/
 
 # Environment variables
@@ -14,8 +14,8 @@ build/
 .env.development.local
 .env.test.local
 .env.production.local
-server/.env
-client/.env
+backend/.env
+frontend/.env
 
 # Logs
 npm-debug.log*
