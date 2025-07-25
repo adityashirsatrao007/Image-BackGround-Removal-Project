@@ -18,10 +18,10 @@ if (!rootElement) {
 } else {
   createRoot(rootElement).render(
     <BrowserRouter>
-      <ClerkProvider 
-        publishableKey={PUBLISHABLE_KEY || "pk_test_placeholder"} 
-        afterSignOutUrl='/' 
-        afterSignInUrl='/'
+      <ClerkProvider
+        publishableKey={PUBLISHABLE_KEY || "pk_test_placeholder"}
+        afterSignOutUrl="/"
+        afterSignInUrl="/"
       >
         <AppContextProvider>
           <App />
