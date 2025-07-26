@@ -29,6 +29,10 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 // API Routes
+app.get("/api/health", (req, res) => {
+  res.json({ success: true, message: "API is working!" });
+});
+
 app.use("/api/user", userRouter);
 app.use("/api/image", imageRouter);
 

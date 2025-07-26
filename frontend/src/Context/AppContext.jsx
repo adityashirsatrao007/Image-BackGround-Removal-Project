@@ -20,7 +20,7 @@ const AppContextProvider = (props) => {
     try {
       console.log("🚀 Starting background removal...");
       console.log("Image file:", image);
-      
+
       if (!image) {
         throw new Error("No image file selected.");
       }
@@ -37,7 +37,7 @@ const AppContextProvider = (props) => {
       console.log("🔑 Getting auth token...");
       const token = await getToken();
       console.log("✅ Token received:", token ? "Present" : "Missing");
-      
+
       const formData = new FormData();
       image && formData.append("image", image);
       console.log("📦 FormData created with image");
@@ -48,7 +48,7 @@ const AppContextProvider = (props) => {
       });
 
       console.log("📥 Response received:", data);
-      
+
       if (data.success) {
         console.log("✅ Background removal successful!");
         setResultImage(data.payload.resultImage);
@@ -63,9 +63,11 @@ const AppContextProvider = (props) => {
         message: error.message,
         response: error.response?.data,
         status: error.response?.status,
-        statusText: error.response?.statusText
+        statusText: error.response?.statusText,
       });
-      alert("Failed to remove background. Please try again. Error: " + error.message);
+      alert(
+        "Failed to remove background. Please try again. Error: " + error.message
+      );
     }
   };
 

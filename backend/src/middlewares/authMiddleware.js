@@ -5,17 +5,17 @@ const isAuthorized = async (req, res, next) => {
     if (!token) {
       return res.status(401).json({
         success: false,
-        message: "Token not found"
+        message: "Token not found",
       });
     }
 
     // Just decode the token to get clerkId (Clerk tokens are already verified)
     const decode = jwt.decode(token);
-    
+
     if (!decode || !decode.sub) {
       return res.status(401).json({
         success: false,
-        message: "Invalid token"
+        message: "Invalid token",
       });
     }
 
@@ -27,7 +27,7 @@ const isAuthorized = async (req, res, next) => {
     console.error("Auth middleware error:", error);
     return res.status(401).json({
       success: false,
-      message: "Authentication failed"
+      message: "Authentication failed",
     });
   }
 };
