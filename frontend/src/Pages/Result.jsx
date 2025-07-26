@@ -3,8 +3,18 @@ import { AppContext } from "../Context/AppContext";
 import { assets } from "../assets/assets";
 
 const Result = () => {
-  const { image, resultImage, removeBG } = useContext(AppContext);
+  const { image, resultImage, removeBG, loading, uploadStatus } =
+    useContext(AppContext);
   const [isDownloading, setIsDownloading] = useState(false);
+
+  // Debug logging
+  console.log("🔍 Result page state:", {
+    hasImage: !!image,
+    hasResultImage: !!resultImage,
+    isLoading: loading,
+    uploadStatus,
+    resultImageLength: resultImage?.length,
+  });
 
   const handleDownload = async () => {
     setIsDownloading(true);
@@ -28,13 +38,41 @@ const Result = () => {
       <div className="bg-white rounded-2xl px-8 py-8 shadow-xl border border-gray-100">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Processing Complete!
-          </h1>
-          <p className="text-gray-600">
-            Your image has been processed successfully. Compare the results
-            below.
-          </p>
+          {loading ? (
+            <>
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                Processing Your Image...
+              </h1>
+              <p className="text-gray-600 mb-4">
+                {uploadStatus || "Please wait while we remove the background"}
+              </p>
+              <div className="flex justify-center items-center space-x-2">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-600"></div>
+                <span className="text-violet-600 font-medium">
+                  {uploadStatus}
+                </span>
+              </div>
+            </>
+          ) : resultImage ? (
+            <>
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                Processing Complete!
+              </h1>
+              <p className="text-gray-600">
+                Your image has been processed successfully. Compare the results
+                below.
+              </p>
+            </>
+          ) : (
+            <>
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                Upload Detected!
+              </h1>
+              <p className="text-gray-600">
+                Your image is being prepared for processing...
+              </p>
+            </>
+          )}
         </div>
 
         {/* Image Comparison */}
@@ -76,7 +114,20 @@ const Result = () => {
             </div>
 
             <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl border-2 border-gray-200 shadow-lg min-h-[300px] flex items-center justify-center overflow-hidden">
-              {resultImage ? (
+              {loading ? (
+                <div className="flex flex-col items-center justify-center p-8">
+                  <div className="relative mb-4">
+                    <div className="w-16 h-16 border-4 border-violet-600 rounded-full border-t-transparent animate-spin"></div>
+                    <div className="absolute inset-0 w-16 h-16 border-4 border-violet-200 rounded-full"></div>
+                  </div>
+                  <p className="text-gray-600 font-medium text-center">
+                    {uploadStatus || "Processing..."}
+                  </p>
+                  <p className="text-gray-500 text-sm text-center mt-2">
+                    This usually takes 5-10 seconds
+                  </p>
+                </div>
+              ) : resultImage ? (
                 <div className="relative group w-full h-full">
                   <img
                     src={resultImage}
@@ -89,15 +140,14 @@ const Result = () => {
                 </div>
               ) : image ? (
                 <div className="flex flex-col items-center justify-center p-8">
-                  <div className="relative">
-                    <div className="w-16 h-16 border-4 border-violet-600 rounded-full border-t-transparent animate-spin"></div>
-                    <div className="absolute inset-0 w-16 h-16 border-4 border-violet-200 rounded-full"></div>
+                  <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center mb-4">
+                    <span className="text-2xl">📤</span>
                   </div>
-                  <p className="text-gray-600 mt-4 font-medium">
-                    Processing your image...
+                  <p className="text-gray-600 font-medium text-center">
+                    Image uploaded successfully!
                   </p>
-                  <p className="text-gray-500 text-sm mt-1">
-                    This usually takes 2-3 seconds
+                  <p className="text-gray-500 text-sm text-center mt-2">
+                    Starting background removal...
                   </p>
                 </div>
               ) : (
@@ -122,78 +172,75 @@ const Result = () => {
           </div>
         </div>
 
-        {/* Action Buttons */}
-        {resultImage && (
-          <div className="border-t border-gray-200 pt-8">
-            <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-              {/* Try Another Image */}
-              <div>
-                <input
-                  onChange={(e) => removeBG(e.target.files[0])}
-                  accept="image/*"
-                  type="file"
-                  id="image1"
-                  hidden
-                />
-                <label
-                  htmlFor="image1"
-                  className="inline-flex items-center gap-3 px-8 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl cursor-pointer transition-all duration-300 hover:scale-105 border border-gray-300"
-                >
-                  <img
-                    width={20}
-                    src={assets.upload_btn_icon}
-                    alt="upload btn"
-                  />
-                  <span className="font-medium">Try Another Image</span>
-                </label>
-              </div>
-
-              {/* Download Button */}
-              <button
-                onClick={handleDownload}
-                disabled={isDownloading}
-                className="inline-flex items-center gap-3 px-8 py-3.5 bg-gradient-to-r from-violet-600 to-fuchsia-500 hover:from-violet-700 hover:to-fuchsia-600 text-white rounded-xl transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+        {/* Action Buttons - Always show for debugging */}
+        <div className="border-t border-gray-200 pt-8">
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+            {/* Try Another Image */}
+            <div>
+              <input
+                onChange={(e) => removeBG(e.target.files[0])}
+                accept="image/*"
+                type="file"
+                id="image1"
+                hidden
+              />
+              <label
+                htmlFor="image1"
+                className="inline-flex items-center gap-3 px-8 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl cursor-pointer transition-all duration-300 hover:scale-105 border border-gray-300"
               >
-                {isDownloading ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span className="font-medium">Downloading...</span>
-                  </>
-                ) : (
-                  <>
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                      />
-                    </svg>
-                    <span className="font-medium">Download Image</span>
-                  </>
-                )}
-              </button>
+                <img width={20} src={assets.upload_btn_icon} alt="upload btn" />
+                <span className="font-medium">Try Another Image</span>
+              </label>
             </div>
 
-            {/* Additional Info */}
-            <div className="text-center mt-6 space-y-2">
-              <p className="text-sm text-gray-600">
-                Your image will be downloaded as a PNG file with transparent
-                background
-              </p>
-              <div className="flex justify-center items-center gap-4 text-xs text-gray-500">
-                <span>✓ High Quality</span>
-                <span>✓ Transparent Background</span>
-                <span>✓ Instant Download</span>
-              </div>
-            </div>
+            {/* Download Button */}
+            <button
+              onClick={handleDownload}
+              disabled={isDownloading || !resultImage}
+              className={`inline-flex items-center gap-3 px-8 py-3.5 rounded-xl cursor-pointer transition-all duration-300 hover:scale-105 font-medium ${
+                resultImage
+                  ? "bg-gradient-to-r from-violet-600 to-fuchsia-500 hover:from-violet-700 hover:to-fuchsia-600 text-white shadow-lg hover:shadow-xl"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }`}
+            >
+              {isDownloading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>Downloading...</span>
+                </>
+              ) : (
+                <>
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  <span>
+                    {resultImage ? "Download Image" : "No Result Yet"}
+                  </span>
+                </>
+              )}
+            </button>
           </div>
-        )}
+
+          {/* Debug Info */}
+          <div className="mt-4 p-4 bg-gray-100 rounded-lg text-sm text-gray-600">
+            <strong>Debug Info:</strong>
+            <br />• Image: {image ? "✅ Present" : "❌ Missing"}
+            <br />• Result Image: {resultImage ? "✅ Present" : "❌ Missing"}
+            <br />• Loading: {loading ? "🔄 Yes" : "✅ No"}
+            <br />• Status: {uploadStatus || "None"}
+            <br />• Result Length: {resultImage?.length || "N/A"}
+          </div>
+        </div>
       </div>
     </div>
   );

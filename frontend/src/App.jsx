@@ -3,15 +3,13 @@ import Home from "./Pages/Home";
 import NotFound from "./Pages/NotFound";
 import Navbar from "./Components/Navbar";
 import Footer from "./Components/Footer";
-import Result from "./Pages/Result";
 
 const App = () => {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen">
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/result" element={<Result />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />

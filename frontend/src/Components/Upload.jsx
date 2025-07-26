@@ -1,9 +1,26 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { assets } from "../assets/assets";
 import { AppContext } from "../Context/AppContext";
 
 const Upload = () => {
   const { removeBG } = useContext(AppContext);
+  const [isUploading, setIsUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  const handleFileSelect = async (file) => {
+    if (file) {
+      setSelectedFile(file);
+      setIsUploading(true);
+
+      // Show immediate feedback
+      console.log("✅ File selected:", file.name);
+
+      // Small delay to show the selection feedback
+      setTimeout(() => {
+        removeBG(file);
+      }, 500);
+    }
+  };
 
   return (
     <div className="pb-16 bg-gradient-to-b from-gray-50 to-white">
@@ -20,7 +37,7 @@ const Upload = () => {
           <div className="absolute -inset-4 bg-gradient-to-r from-violet-600 to-fuchsia-500 rounded-2xl blur-lg opacity-30 animate-pulse"></div>
           <div className="relative bg-white p-8 rounded-2xl shadow-2xl border border-gray-200">
             <input
-              onChange={(e) => removeBG(e.target.files[0])}
+              onChange={(e) => handleFileSelect(e.target.files[0])}
               accept="image/*"
               type="file"
               id="image2"
@@ -28,22 +45,34 @@ const Upload = () => {
             />
             <label
               htmlFor="image2"
-              className="group inline-flex flex-col items-center gap-4 px-12 py-8 rounded-2xl cursor-pointer bg-gradient-to-r from-violet-600 to-fuchsia-500 hover:from-violet-700 hover:to-fuchsia-600 transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-2xl"
+              className={`group inline-flex flex-col items-center gap-4 px-12 py-8 rounded-2xl cursor-pointer transition-all duration-300 shadow-lg hover:shadow-2xl ${
+                isUploading
+                  ? "bg-green-500 hover:bg-green-600"
+                  : "bg-gradient-to-r from-violet-600 to-fuchsia-500 hover:from-violet-700 hover:to-fuchsia-600 hover:scale-105"
+              }`}
             >
               <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                <img
-                  width={32}
-                  src={assets.upload_btn_icon}
-                  alt="upload btn"
-                  className="filter brightness-0 invert"
-                />
+                {isUploading ? (
+                  <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <img
+                    width={32}
+                    src={assets.upload_btn_icon}
+                    alt="upload btn"
+                    className="filter brightness-0 invert"
+                  />
+                )}
               </div>
               <div className="text-center">
                 <p className="text-white text-lg font-semibold mb-1">
-                  Upload Your Image
+                  {isUploading
+                    ? `✅ ${selectedFile?.name || "File"} Selected!`
+                    : "Upload Your Image"}
                 </p>
                 <p className="text-white/80 text-sm">
-                  Drag & drop or click to browse
+                  {isUploading
+                    ? "Redirecting to processing..."
+                    : "Drag & drop or click to browse"}
                 </p>
               </div>
             </label>
